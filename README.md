@@ -32,6 +32,14 @@ UIとしては適当なwebUIを作成する。機能は以下の通り。
 
 ## 起動方法
 
+Dockerで起動する場合:
+
+```sh
+docker compose up --build
+```
+
+ローカルのPythonで起動する場合:
+
 ```sh
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
