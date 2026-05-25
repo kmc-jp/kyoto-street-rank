@@ -20,7 +20,7 @@
       <tbody>
         {% for street in streets %}
           <tr>
-            <td>{{ street.name }}</td>
+            <td><a href="{{ url_for('intersections_index', street=street.name) }}">{{ street.name }}</a></td>
             <td class="actions">
               <a href="{{ url_for('streets_edit', street_id=street.id) }}">編集</a>
               <form method="post" action="{{ url_for('streets_delete', street_id=street.id) }}">

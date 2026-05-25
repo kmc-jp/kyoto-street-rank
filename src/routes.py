@@ -43,6 +43,7 @@ def register_routes(app):
 
     @app.route("/intersections/new", methods=["GET", "POST"])
     def intersections_new():
+        return_street = request.values.get("street", "").strip()
         if request.method == "POST":
             error = save_intersection(
                 request.form.get("name"),
@@ -51,16 +52,17 @@ def register_routes(app):
             )
             if error:
                 flash(error, "error")
-                return render_intersection_form(None, request.form)
+                return render_intersection_form(None, request.form, return_street)
 
             flash("交差点を追加しました", "success")
-            return redirect(url_for("intersections_index"))
+            return redirect(intersections_index_url(return_street))
 
-        return render_intersection_form(None, {})
+        return render_intersection_form(None, {}, return_street)
 
     @app.route("/intersections/<int:intersection_id>/edit", methods=["GET", "POST"])
     def intersections_edit(intersection_id):
         intersection = Intersection.query.get_or_404(intersection_id)
+        return_street = request.values.get("street", "").strip()
         if request.method == "POST":
             error = save_intersection(
                 request.form.get("name"),
@@ -70,24 +72,25 @@ def register_routes(app):
             )
             if error:
                 flash(error, "error")
-                return render_intersection_form(intersection, request.form)
+                return render_intersection_form(intersection, request.form, return_street)
 
             flash("交差点を更新しました", "success")
-            return redirect(url_for("intersections_index"))
+            return redirect(intersections_index_url(return_street))
 
         form = {
             "name": intersection.name,
             "winner": intersection.winner.name,
             "loser": intersection.loser.name,
         }
-        return render_intersection_form(intersection, form)
+        return render_intersection_form(intersection, form, return_street)
 
     @app.route("/intersections/<int:intersection_id>/delete", methods=["POST"])
     def intersections_delete(intersection_id):
         intersection = Intersection.query.get_or_404(intersection_id)
+        return_street = request.form.get("street", "").strip()
         delete_intersection(intersection)
         flash("交差点を削除しました", "success")
-        return redirect(url_for("intersections_index"))
+        return redirect(intersections_index_url(return_street))
 
     @app.route("/streets")
     def streets_index():
@@ -116,10 +119,17 @@ def register_routes(app):
         return redirect(url_for("streets_index"))
 
 
-def render_intersection_form(intersection, form):
+def render_intersection_form(intersection, form, return_street=""):
     return render_template(
         "intersections/form.html",
         intersection=intersection,
         form=form,
+        return_street=return_street,
         street_names=list_street_names(),
     )
+
+
+def intersections_index_url(street_name):
+    if street_name:
+        return url_for("intersections_index", street=street_name)
+    return url_for("intersections_index")

@@ -9,6 +9,8 @@
   </div>
 
   <form class="panel" method="post">
+    <input type="hidden" name="street" value="{{ return_street }}">
+
     <label>
       交差点名
       <input name="name" value="{{ form.get('name', '') }}" required>
@@ -32,7 +34,7 @@
 
     <div class="form-actions">
       <button class="button" type="submit">保存</button>
-      <a href="{{ url_for('intersections_index') }}">キャンセル</a>
+      <a href="{{ url_for('intersections_index', street=return_street) if return_street else url_for('intersections_index') }}">キャンセル</a>
     </div>
   </form>
 {% endblock %}

@@ -6,7 +6,7 @@
       <h1>交差点</h1>
       <p>交差点名、強い通り、弱い通りを管理します。</p>
     </div>
-    <a class="button" href="{{ url_for('intersections_new') }}">追加</a>
+    <a class="button" href="{{ url_for('intersections_new', street=selected_street) if selected_street else url_for('intersections_new') }}">追加</a>
   </div>
 
   <form class="filter-bar" method="get">
@@ -42,8 +42,9 @@
             <td>{{ intersection.winner.name }}</td>
             <td>{{ intersection.loser.name }}</td>
             <td class="actions">
-              <a href="{{ url_for('intersections_edit', intersection_id=intersection.id) }}">編集</a>
+              <a href="{{ url_for('intersections_edit', intersection_id=intersection.id, street=selected_street) if selected_street else url_for('intersections_edit', intersection_id=intersection.id) }}">編集</a>
               <form method="post" action="{{ url_for('intersections_delete', intersection_id=intersection.id) }}">
+                <input type="hidden" name="street" value="{{ selected_street }}">
                 <button class="link-button" type="submit">削除</button>
               </form>
             </td>
