@@ -1,5 +1,7 @@
 import networkx as nx
 
+from .ranking import PAGERANK_ALPHA
+
 
 PADDING = 90.0
 NODE_RADIUS = 34.0
@@ -129,7 +131,7 @@ def build_rank_colors(graph):
     if not graph:
         return {}
 
-    scores = nx.pagerank(graph)
+    scores = nx.pagerank(graph, alpha=PAGERANK_ALPHA)
     ranked_nodes = sorted(scores, key=lambda node: (-scores[node], node))
     node_count = len(ranked_nodes)
 
