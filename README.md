@@ -15,3 +15,17 @@
 - 七条堀川/堀川五条/五条大宮/大宮七条
 - 三条御前/御前通四条/四条河原町/河原町三条
 
+
+## 実装について
+
+- Pythonで実装する
+- 通り・交差点はsqliteで管理する
+  - テーブルはStreetsとIntersectionsの2種
+  - StreetはIDと通り名のフィールドを持つ
+  - IntersectionsはID、交差点名、強い通り、弱い通りのフィールドを持つ。「強い通り」「弱い通り」はStreetを参照する
+- PageRankの計算はNetworkXライブラリを使う
+  - Streetをノード、Intersectionsを「弱い通り」→「強い通り」のエッジとして計算する
+
+UIとしては適当なwebUIを作成する。機能は以下の通り。
+- 計算したPage Rankによる京都の通りランキング
+- 通り・交差点のCRUD画面
