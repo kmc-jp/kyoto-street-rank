@@ -56,6 +56,12 @@ nav {
   margin: 32px auto;
 }
 
+.graph-container {
+  width: 100%;
+  margin: 24px 0;
+  padding: 0 20px;
+}
+
 .page-head {
   display: flex;
   align-items: flex-start;
@@ -155,7 +161,9 @@ td.actions form {
 
 .panel,
 .empty,
-.filter-bar {
+.filter-bar,
+.graph-panel,
+.cycle-list {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -173,6 +181,40 @@ td.actions form {
   align-items: end;
   gap: 14px;
   margin-bottom: 18px;
+}
+
+.graph-panel {
+  overflow-x: auto;
+}
+
+.street-graph {
+  display: block;
+  max-width: none;
+}
+
+.graph-edge {
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.graph-node circle {
+  stroke: #263238;
+  stroke-width: 3;
+}
+
+.graph-node text {
+  font-size: 14px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.cycle-list {
+  margin-top: 18px;
+}
+
+.cycle-list ul {
+  margin: 8px 0 0;
+  padding-left: 22px;
 }
 
 label {

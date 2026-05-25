@@ -1,6 +1,7 @@
 from flask import flash, redirect, render_template, request, url_for
 from sqlalchemy.orm import aliased
 
+from .graph_view import build_graph_view
 from .models import Intersection, Street
 from .ranking import calculate_ranking
 from .services import (
@@ -19,6 +20,12 @@ def register_routes(app):
         intersections = Intersection.query.order_by(Intersection.name).all()
         ranks = calculate_ranking(intersections)
         return render_template("ranking.html", ranks=ranks, intersections=intersections)
+
+    @app.route("/graph")
+    def graph():
+        intersections = Intersection.query.order_by(Intersection.name).all()
+        graph_view = build_graph_view(intersections)
+        return render_template("graph.html", graph=graph_view)
 
     @app.route("/intersections")
     def intersections_index():

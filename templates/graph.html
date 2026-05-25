@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block main_class %}graph-container{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>通りの勝敗グラフ</h1>
+      <p>矢印は弱い通りから強い通りへ向きます。色はPageRankの強い順に赤、黄、青です。</p>
+    </div>
+  </div>
+
+  {% if graph.nodes %}
+    <section class="graph-panel">
+      <svg class="street-graph" viewBox="0 0 {{ graph.width }} {{ graph.height }}" width="{{ graph.width }}" height="{{ graph.height }}" role="img" aria-label="通りの勝敗グラフ">
+        {% for edge in graph.edges %}
+          <line class="graph-edge" x1="{{ edge.x1 }}" y1="{{ edge.y1 }}" x2="{{ edge.x2 }}" y2="{{ edge.y2 }}" style="stroke: {{ edge.color }};">
+            <title>{{ edge.name }}: {{ edge.source }} → {{ edge.target }}</title>
+          </line>
+          <polygon class="graph-arrow" points="{{ edge.arrow_points }}" style="fill: {{ edge.color }};"></polygon>
+        {% endfor %}
+
+        {% for node in graph.nodes %}
+          <g class="graph-node" transform="translate({{ node.x }}, {{ node.y }})">
+            <circle r="34" style="fill: {{ node.color }};"></circle>
+            <text text-anchor="middle" dominant-baseline="central" style="fill: {{ node.text_color }};">{{ node.name }}</text>
+          </g>
+        {% endfor %}
+      </svg>
+    </section>
+
+    <section class="cycle-list">
+      <h2>ループ</h2>
+      {% if graph.cycles %}
+        <ul>
+          {% for cycle in graph.cycles %}
+            <li>{{ cycle|join(" → ") }} → {{ cycle[0] }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>ループはありません。</p>
+      {% endif %}
+    </section>
+  {% else %}
+    <section class="empty">
+      <h2>グラフがありません</h2>
+      <p>交差点を追加するとグラフが表示されます。</p>
+    </section>
+  {% endif %}
+{% endblock %}

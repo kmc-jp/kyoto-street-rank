@@ -11,12 +11,13 @@
       <a class="brand" href="{{ url_for('ranking') }}">Kyoto Street Rank</a>
       <nav>
         <a href="{{ url_for('ranking') }}">ランキング</a>
+        <a href="{{ url_for('graph') }}">グラフ</a>
         <a href="{{ url_for('intersections_index') }}">交差点</a>
         <a href="{{ url_for('streets_index') }}">通り</a>
       </nav>
     </header>
 
-    <main class="container">
+    <main class="{% block main_class %}container{% endblock %}">
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           <div class="messages">
