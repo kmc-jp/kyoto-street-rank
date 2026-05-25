@@ -9,6 +9,15 @@ def list_street_names():
     return [street.name for street in streets]
 
 
+def count_intersections_by_street():
+    counts = {}
+    intersections = Intersection.query.all()
+    for intersection in intersections:
+        counts[intersection.winner_street_id] = counts.get(intersection.winner_street_id, 0) + 1
+        counts[intersection.loser_street_id] = counts.get(intersection.loser_street_id, 0) + 1
+    return counts
+
+
 def save_intersection(name, winner_name, loser_name, intersection=None):
     name = normalize_name(name)
     winner_name = normalize_name(winner_name)

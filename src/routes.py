@@ -4,6 +4,7 @@ from sqlalchemy.orm import aliased
 from .models import Intersection, Street
 from .ranking import calculate_ranking
 from .services import (
+    count_intersections_by_street,
     delete_intersection,
     delete_street_and_intersections,
     list_street_names,
@@ -95,7 +96,8 @@ def register_routes(app):
     @app.route("/streets")
     def streets_index():
         streets = Street.query.order_by(Street.name).all()
-        return render_template("streets/index.html", streets=streets)
+        intersection_counts = count_intersections_by_street()
+        return render_template("streets/index.html", streets=streets, intersection_counts=intersection_counts)
 
     @app.route("/streets/<int:street_id>/edit", methods=["GET", "POST"])
     def streets_edit(street_id):
