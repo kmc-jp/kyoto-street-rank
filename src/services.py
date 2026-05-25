@@ -1,7 +1,7 @@
 from sqlalchemy import or_
 
-from extensions import db
-from models import Intersection, Street
+from .extensions import db
+from .models import Intersection, Street
 
 
 def list_street_names():

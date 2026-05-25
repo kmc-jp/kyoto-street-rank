@@ -29,3 +29,11 @@
 UIとしては適当なwebUIを作成する。機能は以下の通り。
 - 計算したPage Rankによる京都の通りランキング
 - 通り・交差点のCRUD画面
+
+## 起動方法
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/flask --app src.app run
+```

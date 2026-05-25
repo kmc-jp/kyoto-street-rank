@@ -1,6 +1,6 @@
 from sqlalchemy import CheckConstraint, UniqueConstraint
 
-from extensions import db
+from .extensions import db
 
 
 class Street(db.Model):

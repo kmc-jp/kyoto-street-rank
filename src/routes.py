@@ -1,8 +1,8 @@
 from flask import flash, redirect, render_template, request, url_for
 
-from models import Intersection, Street
-from ranking import calculate_ranking
-from services import (
+from .models import Intersection, Street
+from .ranking import calculate_ranking
+from .services import (
     delete_intersection,
     delete_street_and_intersections,
     list_street_names,
