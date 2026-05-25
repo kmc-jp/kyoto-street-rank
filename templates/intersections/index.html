@@ -9,6 +9,22 @@
     <a class="button" href="{{ url_for('intersections_new') }}">追加</a>
   </div>
 
+  <form class="filter-bar" method="get">
+    <label>
+      通りで絞り込み
+      <input name="street" list="street-options" value="{{ selected_street }}" placeholder="通り名を選択または入力">
+    </label>
+    <datalist id="street-options">
+      {% for street_name in street_names %}
+        <option value="{{ street_name }}"></option>
+      {% endfor %}
+    </datalist>
+    <button class="button" type="submit">絞り込み</button>
+    {% if selected_street %}
+      <a href="{{ url_for('intersections_index') }}">解除</a>
+    {% endif %}
+  </form>
+
   {% if intersections %}
     <table>
       <thead>
@@ -37,8 +53,8 @@
     </table>
   {% else %}
     <section class="empty">
-      <h2>交差点がありません</h2>
-      <p>交差点を追加すると通りも自動で登録されます。</p>
+      <h2>{% if selected_street %}該当する交差点がありません{% else %}交差点がありません{% endif %}</h2>
+      <p>{% if selected_street %}別の通りで絞り込むか、フィルタを解除してください。{% else %}交差点を追加すると通りも自動で登録されます。{% endif %}</p>
     </section>
   {% endif %}
 {% endblock %}

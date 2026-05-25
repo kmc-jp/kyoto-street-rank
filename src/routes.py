@@ -1,4 +1,5 @@
 from flask import flash, redirect, render_template, request, url_for
+from sqlalchemy.orm import aliased
 
 from .models import Intersection, Street
 from .ranking import calculate_ranking
@@ -20,8 +21,25 @@ def register_routes(app):
 
     @app.route("/intersections")
     def intersections_index():
-        intersections = Intersection.query.order_by(Intersection.name).all()
-        return render_template("intersections/index.html", intersections=intersections)
+        selected_street = request.args.get("street", "").strip()
+        intersections_query = Intersection.query
+
+        if selected_street:
+            winner = aliased(Street)
+            loser = aliased(Street)
+            intersections_query = (
+                intersections_query.join(winner, Intersection.winner)
+                .join(loser, Intersection.loser)
+                .filter((winner.name == selected_street) | (loser.name == selected_street))
+            )
+
+        intersections = intersections_query.order_by(Intersection.name).all()
+        return render_template(
+            "intersections/index.html",
+            intersections=intersections,
+            street_names=list_street_names(),
+            selected_street=selected_street,
+        )
 
     @app.route("/intersections/new", methods=["GET", "POST"])
     def intersections_new():

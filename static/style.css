@@ -154,7 +154,8 @@ td.actions form {
 }
 
 .panel,
-.empty {
+.empty,
+.filter-bar {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -164,6 +165,14 @@ td.actions form {
 .panel {
   display: grid;
   gap: 16px;
+}
+
+.filter-bar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto auto;
+  align-items: end;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
 label {
@@ -220,5 +229,9 @@ input {
   table {
     display: block;
     overflow-x: auto;
+  }
+
+  .filter-bar {
+    grid-template-columns: 1fr;
   }
 }
