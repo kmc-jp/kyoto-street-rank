@@ -43,7 +43,7 @@
             <td>{{ intersection.loser.name }}</td>
             <td class="actions">
               <a href="{{ url_for('intersections_edit', intersection_id=intersection.id, street=selected_street) if selected_street else url_for('intersections_edit', intersection_id=intersection.id) }}">編集</a>
-              <form method="post" action="{{ url_for('intersections_delete', intersection_id=intersection.id) }}">
+              <form method="post" action="{{ url_for('intersections_delete', intersection_id=intersection.id) }}" onsubmit="return confirm('この交差点を削除しますか？');">
                 <input type="hidden" name="street" value="{{ selected_street }}">
                 <button class="link-button" type="submit">削除</button>
               </form>
