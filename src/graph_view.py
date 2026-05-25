@@ -8,6 +8,7 @@ NODE_RADIUS = 34.0
 NODE_HEIGHT = 78.0
 ARROW_LENGTH = 18.0
 ARROW_HALF_WIDTH = 8.0
+WHITE_TEXT_LUMINANCE_LIMIT = 135
 
 
 def build_graph_view(intersections):
@@ -138,10 +139,10 @@ def build_rank_colors(graph):
     colors = {}
     for index, node in enumerate(ranked_nodes):
         position = 0 if node_count == 1 else index / (node_count - 1)
-        color = rank_color(position)
+        color = darken_for_white_text(rank_color(position))
         colors[node] = {
             "fill": color,
-            "text": readable_text_color(color),
+            "text": "#ffffff",
         }
     return colors
 
@@ -168,10 +169,18 @@ def rgb_to_hex(rgb):
     return "#" + "".join(f"{channel:02x}" for channel in rgb)
 
 
-def readable_text_color(background):
-    red, green, blue = hex_to_rgb(background)
-    luminance = ((red * 299) + (green * 587) + (blue * 114)) / 1000
-    return "#1e2528" if luminance > 150 else "#ffffff"
+def darken_for_white_text(color):
+    red, green, blue = hex_to_rgb(color)
+    while luminance((red, green, blue)) > WHITE_TEXT_LUMINANCE_LIMIT:
+        red = round(red * 0.92)
+        green = round(green * 0.92)
+        blue = round(blue * 0.92)
+    return rgb_to_hex((red, green, blue))
+
+
+def luminance(rgb):
+    red, green, blue = rgb
+    return ((red * 299) + (green * 587) + (blue * 114)) / 1000
 
 
 def build_nodes(graph, positions, colors, cycle_nodes):

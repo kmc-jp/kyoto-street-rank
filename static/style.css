@@ -198,8 +198,7 @@ td.actions form {
 }
 
 .graph-node circle {
-  stroke: #263238;
-  stroke-width: 3;
+  stroke: none;
 }
 
 .graph-node text {
