@@ -1,0 +1,107 @@
+from flask import flash, redirect, render_template, request, url_for
+
+from models import Intersection, Street
+from ranking import calculate_ranking
+from services import (
+    delete_intersection,
+    delete_street_and_intersections,
+    list_street_names,
+    save_intersection,
+    update_street_name,
+)
+
+
+def register_routes(app):
+    @app.route("/")
+    def ranking():
+        intersections = Intersection.query.order_by(Intersection.name).all()
+        ranks = calculate_ranking(intersections)
+        return render_template("ranking.html", ranks=ranks, intersections=intersections)
+
+    @app.route("/intersections")
+    def intersections_index():
+        intersections = Intersection.query.order_by(Intersection.name).all()
+        return render_template("intersections/index.html", intersections=intersections)
+
+    @app.route("/intersections/new", methods=["GET", "POST"])
+    def intersections_new():
+        if request.method == "POST":
+            error = save_intersection(
+                request.form.get("name"),
+                request.form.get("winner"),
+                request.form.get("loser"),
+            )
+            if error:
+                flash(error, "error")
+                return render_intersection_form(None, request.form)
+
+            flash("交差点を追加しました", "success")
+            return redirect(url_for("intersections_index"))
+
+        return render_intersection_form(None, {})
+
+    @app.route("/intersections/<int:intersection_id>/edit", methods=["GET", "POST"])
+    def intersections_edit(intersection_id):
+        intersection = Intersection.query.get_or_404(intersection_id)
+        if request.method == "POST":
+            error = save_intersection(
+                request.form.get("name"),
+                request.form.get("winner"),
+                request.form.get("loser"),
+                intersection,
+            )
+            if error:
+                flash(error, "error")
+                return render_intersection_form(intersection, request.form)
+
+            flash("交差点を更新しました", "success")
+            return redirect(url_for("intersections_index"))
+
+        form = {
+            "name": intersection.name,
+            "winner": intersection.winner.name,
+            "loser": intersection.loser.name,
+        }
+        return render_intersection_form(intersection, form)
+
+    @app.route("/intersections/<int:intersection_id>/delete", methods=["POST"])
+    def intersections_delete(intersection_id):
+        intersection = Intersection.query.get_or_404(intersection_id)
+        delete_intersection(intersection)
+        flash("交差点を削除しました", "success")
+        return redirect(url_for("intersections_index"))
+
+    @app.route("/streets")
+    def streets_index():
+        streets = Street.query.order_by(Street.name).all()
+        return render_template("streets/index.html", streets=streets)
+
+    @app.route("/streets/<int:street_id>/edit", methods=["GET", "POST"])
+    def streets_edit(street_id):
+        street = Street.query.get_or_404(street_id)
+        if request.method == "POST":
+            error = update_street_name(street, request.form.get("name"))
+            if error:
+                flash(error, "error")
+                return render_template("streets/form.html", street=street)
+
+            flash("通り名を更新しました", "success")
+            return redirect(url_for("streets_index"))
+
+        return render_template("streets/form.html", street=street)
+
+    @app.route("/streets/<int:street_id>/delete", methods=["POST"])
+    def streets_delete(street_id):
+        street = Street.query.get_or_404(street_id)
+        delete_street_and_intersections(street)
+        flash("通りと関連する交差点を削除しました", "success")
+        return redirect(url_for("streets_index"))
+
+
+def render_intersection_form(intersection, form):
+    return render_template(
+        "intersections/form.html",
+        intersection=intersection,
+        form=form,
+        street_names=list_street_names(),
+    )

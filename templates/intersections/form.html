@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>{% if intersection %}交差点を編集{% else %}交差点を追加{% endif %}</h1>
+      <p>既存の通りを候補から選ぶか、新しい通り名を入力してください。</p>
+    </div>
+  </div>
+
+  <form class="panel" method="post">
+    <label>
+      交差点名
+      <input name="name" value="{{ form.get('name', '') }}" required>
+    </label>
+
+    <label>
+      強い通り
+      <input name="winner" list="street-options" value="{{ form.get('winner', '') }}" required>
+    </label>
+
+    <label>
+      弱い通り
+      <input name="loser" list="street-options" value="{{ form.get('loser', '') }}" required>
+    </label>
+
+    <datalist id="street-options">
+      {% for street_name in street_names %}
+        <option value="{{ street_name }}"></option>
+      {% endfor %}
+    </datalist>
+
+    <div class="form-actions">
+      <button class="button" type="submit">保存</button>
+      <a href="{{ url_for('intersections_index') }}">キャンセル</a>
+    </div>
+  </form>
+{% endblock %}

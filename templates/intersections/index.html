@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>交差点</h1>
+      <p>交差点名、強い通り、弱い通りを管理します。</p>
+    </div>
+    <a class="button" href="{{ url_for('intersections_new') }}">追加</a>
+  </div>
+
+  {% if intersections %}
+    <table>
+      <thead>
+        <tr>
+          <th>交差点名</th>
+          <th>強い通り</th>
+          <th>弱い通り</th>
+          <th class="actions">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for intersection in intersections %}
+          <tr>
+            <td>{{ intersection.name }}</td>
+            <td>{{ intersection.winner.name }}</td>
+            <td>{{ intersection.loser.name }}</td>
+            <td class="actions">
+              <a href="{{ url_for('intersections_edit', intersection_id=intersection.id) }}">編集</a>
+              <form method="post" action="{{ url_for('intersections_delete', intersection_id=intersection.id) }}">
+                <button class="link-button" type="submit">削除</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <section class="empty">
+      <h2>交差点がありません</h2>
+      <p>交差点を追加すると通りも自動で登録されます。</p>
+    </section>
+  {% endif %}
+{% endblock %}

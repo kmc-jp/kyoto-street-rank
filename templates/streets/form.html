@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>通り名を編集</h1>
+    </div>
+  </div>
+
+  <form class="panel" method="post">
+    <label>
+      通り名
+      <input name="name" value="{{ street.name }}" required>
+    </label>
+
+    <div class="form-actions">
+      <button class="button" type="submit">保存</button>
+      <a href="{{ url_for('streets_index') }}">キャンセル</a>
+    </div>
+  </form>
+{% endblock %}

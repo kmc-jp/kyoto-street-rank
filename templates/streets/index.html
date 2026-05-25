@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>通り</h1>
+      <p>通りは交差点の追加時に自動で作成されます。孤立した通りは保存しません。</p>
+    </div>
+    <a class="button" href="{{ url_for('intersections_new') }}">交差点から追加</a>
+  </div>
+
+  {% if streets %}
+    <table>
+      <thead>
+        <tr>
+          <th>通り名</th>
+          <th class="actions">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for street in streets %}
+          <tr>
+            <td>{{ street.name }}</td>
+            <td class="actions">
+              <a href="{{ url_for('streets_edit', street_id=street.id) }}">編集</a>
+              <form method="post" action="{{ url_for('streets_delete', street_id=street.id) }}">
+                <button class="link-button" type="submit">削除</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <section class="empty">
+      <h2>通りがありません</h2>
+      <p>交差点を追加すると通りも表示されます。</p>
+    </section>
+  {% endif %}
+{% endblock %}
