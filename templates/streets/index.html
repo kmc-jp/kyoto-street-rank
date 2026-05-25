@@ -14,6 +14,7 @@
       <thead>
         <tr>
           <th>通り名</th>
+          <th>向き</th>
           <th>交差点数</th>
           <th class="actions">操作</th>
         </tr>
@@ -22,6 +23,7 @@
         {% for street in streets %}
           <tr>
             <td><a href="{{ url_for('intersections_index', street=street.name) }}">{{ street.name }}</a></td>
+            <td>{% if street.orientation == "east_west" %}東西{% elif street.orientation == "north_south" %}南北{% else %}未設定{% endif %}</td>
             <td>{{ intersection_counts.get(street.id, 0) }}</td>
             <td class="actions">
               <a href="{{ url_for('streets_edit', street_id=street.id) }}">編集</a>

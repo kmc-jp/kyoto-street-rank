@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block main_class %}matrix-container{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>交差点マトリクス</h1>
+      <p>東西の通りと南北の通りの組み合わせで、登録済みの交差点を確認します。</p>
+    </div>
+  </div>
+
+  {% if matrix.unset_streets %}
+    <section class="empty matrix-note">
+      <h2>向きが未設定の通り</h2>
+      <p>
+        {% for street in matrix.unset_streets %}
+          <a href="{{ url_for('streets_edit', street_id=street.id) }}">{{ street.name }}</a>{% if not loop.last %}、{% endif %}
+        {% endfor %}
+      </p>
+    </section>
+  {% endif %}
+
+  {% if matrix.rows and matrix.north_south_streets %}
+    <div class="matrix-scroll">
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>東西＼南北</th>
+            {% for street in matrix.north_south_streets %}
+              <th><a href="{{ url_for('intersections_index', street=street.name) }}">{{ street.name }}</a></th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in matrix.rows %}
+            <tr>
+              <th><a href="{{ url_for('intersections_index', street=row.street.name) }}">{{ row.street.name }}</a></th>
+              {% for cell in row.cells %}
+                {% if cell.intersection %}
+                  <td class="registered">
+                    <a href="{{ url_for('intersections_edit', intersection_id=cell.intersection.id) }}">{{ cell.intersection.name }}</a>
+                  </td>
+                {% else %}
+                  <td class="missing">未登録</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <section class="empty">
+      <h2>マトリクスを表示できません</h2>
+      <p>通り編集画面で、東西と南北の通りをそれぞれ設定してください。</p>
+    </section>
+  {% endif %}
+{% endblock %}

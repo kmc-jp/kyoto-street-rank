@@ -3,29 +3,45 @@ from sqlalchemy.orm import aliased
 
 from .graph_view import build_graph_view
 from .models import Intersection, Street
-from .ranking import calculate_ranking
+from .ranking import RANKING_METHODS, calculate_ranking
 from .services import (
+    ORIENTATION_LABELS,
+    build_intersection_matrix,
     count_intersections_by_street,
     delete_intersection,
     delete_street_and_intersections,
     list_street_names,
     save_intersection,
-    update_street_name,
+    update_street,
 )
 
 
 def register_routes(app):
     @app.route("/")
     def ranking():
+        method = request.args.get("method", "pagerank")
+        if method not in RANKING_METHODS:
+            method = "pagerank"
+
         intersections = Intersection.query.order_by(Intersection.name).all()
-        ranks = calculate_ranking(intersections)
-        return render_template("ranking.html", ranks=ranks, intersections=intersections)
+        ranks = calculate_ranking(intersections, method)
+        return render_template(
+            "ranking.html",
+            ranks=ranks,
+            method=method,
+            methods=RANKING_METHODS,
+        )
 
     @app.route("/graph")
     def graph():
         intersections = Intersection.query.order_by(Intersection.name).all()
         graph_view = build_graph_view(intersections)
         return render_template("graph.html", graph=graph_view)
+
+    @app.route("/matrix")
+    def matrix():
+        matrix_view = build_intersection_matrix()
+        return render_template("matrix.html", matrix=matrix_view)
 
     @app.route("/intersections")
     def intersections_index():
@@ -110,15 +126,15 @@ def register_routes(app):
     def streets_edit(street_id):
         street = Street.query.get_or_404(street_id)
         if request.method == "POST":
-            error = update_street_name(street, request.form.get("name"))
+            error = update_street(street, request.form.get("name"), request.form.get("orientation"))
             if error:
                 flash(error, "error")
-                return render_template("streets/form.html", street=street)
+                return render_template("streets/form.html", street=street, orientation_labels=ORIENTATION_LABELS)
 
             flash("通り名を更新しました", "success")
             return redirect(url_for("streets_index"))
 
-        return render_template("streets/form.html", street=street)
+        return render_template("streets/form.html", street=street, orientation_labels=ORIENTATION_LABELS)
 
     @app.route("/streets/<int:street_id>/delete", methods=["POST"])
     def streets_delete(street_id):

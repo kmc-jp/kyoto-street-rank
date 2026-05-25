@@ -4,9 +4,15 @@
   <div class="page-head">
     <div>
       <h1>京都の通りランキング</h1>
-      <p>交差点名で先に来る通りを勝者として、PageRankでつよさを計算します。</p>
+      <p>交差点名で先に来る通りを勝者として、つよさを計算します。</p>
     </div>
     <a class="button" href="{{ url_for('intersections_new') }}">交差点を追加</a>
+  </div>
+
+  <div class="segmented">
+    {% for key, label in methods.items() %}
+      <a class="{% if method == key %}active{% endif %}" href="{{ url_for('ranking', method=key) }}">{{ label }}</a>
+    {% endfor %}
   </div>
 
   {% if ranks %}
@@ -16,14 +22,20 @@
           <th>順位</th>
           <th>通り</th>
           <th>PageRank</th>
+          <th>勝利数</th>
+          <th>敗退数</th>
+          <th>勝敗差</th>
         </tr>
       </thead>
       <tbody>
-        {% for name, score in ranks %}
+        {% for row in ranks %}
           <tr>
             <td>{{ loop.index }}</td>
-            <td>{{ name }}</td>
-            <td>{{ "%.6f"|format(score) }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ "%.6f"|format(row.pagerank) }}</td>
+            <td>{{ row.wins }}</td>
+            <td>{{ row.losses }}</td>
+            <td>{{ row.win_loss }}</td>
           </tr>
         {% endfor %}
       </tbody>

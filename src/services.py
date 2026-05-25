@@ -4,6 +4,12 @@ from .extensions import db
 from .models import Intersection, Street
 
 
+ORIENTATION_LABELS = {
+    "east_west": "東西",
+    "north_south": "南北",
+}
+
+
 def list_street_names():
     streets = Street.query.order_by(Street.name).all()
     return [street.name for street in streets]
@@ -73,18 +79,51 @@ def delete_intersection(intersection):
     db.session.commit()
 
 
-def update_street_name(street, name):
+def update_street(street, name, orientation):
     name = normalize_name(name)
     if not name:
         return "通り名を入力してください"
+
+    orientation = normalize_orientation(orientation)
+    if orientation is None:
+        return "通りの向きは東西、南北、未設定のいずれかを選んでください"
 
     duplicate = Street.query.filter(Street.name == name, Street.id != street.id).first()
     if duplicate:
         return "同じ通り名が既に存在します"
 
     street.name = name
+    street.orientation = orientation or None
     db.session.commit()
     return None
+
+
+def build_intersection_matrix():
+    east_west_streets = Street.query.filter_by(orientation="east_west").order_by(Street.name).all()
+    north_south_streets = Street.query.filter_by(orientation="north_south").order_by(Street.name).all()
+    unset_streets = Street.query.filter(Street.orientation.is_(None)).order_by(Street.name).all()
+    intersections = Intersection.query.all()
+    intersections_by_pair = {intersection.pair_key: intersection for intersection in intersections}
+
+    rows = []
+    for east_west in east_west_streets:
+        cells = []
+        for north_south in north_south_streets:
+            pair_key = make_pair_key(east_west.id, north_south.id)
+            cells.append(
+                {
+                    "street": north_south,
+                    "intersection": intersections_by_pair.get(pair_key),
+                }
+            )
+        rows.append({"street": east_west, "cells": cells})
+
+    return {
+        "east_west_streets": east_west_streets,
+        "north_south_streets": north_south_streets,
+        "unset_streets": unset_streets,
+        "rows": rows,
+    }
 
 
 def delete_street_and_intersections(street):
@@ -136,3 +175,12 @@ def normalize_name(value):
     if value is None:
         return ""
     return value.strip()
+
+
+def normalize_orientation(value):
+    value = normalize_name(value)
+    if value == "":
+        return ""
+    if value in ORIENTATION_LABELS:
+        return value
+    return None

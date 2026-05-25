@@ -21,28 +21,15 @@ def build_graph_view(intersections):
         graph.add_edge(source, target)
         edge_names[(source, target)] = intersection.name
 
-    cycles = list(nx.simple_cycles(graph))
-    cycle_nodes = {node for cycle in cycles for node in cycle}
-    cycle_edges = collect_cycle_edges(cycles)
     colors = build_rank_colors(graph)
 
     positions, width, height = build_positions(graph)
     return {
         "width": width,
         "height": height,
-        "nodes": build_nodes(graph, positions, colors, cycle_nodes),
-        "edges": build_edges(graph, positions, colors, edge_names, cycle_edges),
-        "cycles": cycles,
+        "nodes": build_nodes(graph, positions, colors),
+        "edges": build_edges(graph, positions, colors, edge_names),
     }
-
-
-def collect_cycle_edges(cycles):
-    cycle_edges = set()
-    for cycle in cycles:
-        for index, source in enumerate(cycle):
-            target = cycle[(index + 1) % len(cycle)]
-            cycle_edges.add((source, target))
-    return cycle_edges
 
 
 def build_positions(graph):
@@ -183,7 +170,7 @@ def luminance(rgb):
     return ((red * 299) + (green * 587) + (blue * 114)) / 1000
 
 
-def build_nodes(graph, positions, colors, cycle_nodes):
+def build_nodes(graph, positions, colors):
     return [
         {
             "name": node,
@@ -191,13 +178,12 @@ def build_nodes(graph, positions, colors, cycle_nodes):
             "y": positions[node]["y"],
             "color": colors[node]["fill"],
             "text_color": colors[node]["text"],
-            "in_cycle": node in cycle_nodes,
         }
         for node in graph.nodes
     ]
 
 
-def build_edges(graph, positions, colors, edge_names, cycle_edges):
+def build_edges(graph, positions, colors, edge_names):
     edges = []
     for source, target in graph.edges:
         source_node = positions[source]
@@ -214,7 +200,6 @@ def build_edges(graph, positions, colors, edge_names, cycle_edges):
                 "x2": x2,
                 "y2": y2,
                 "arrow_points": arrow_points(x2, y2, unit_x, unit_y),
-                "in_cycle": (source, target) in cycle_edges,
             }
         )
     return edges

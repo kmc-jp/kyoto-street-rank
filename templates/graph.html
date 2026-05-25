@@ -29,18 +29,6 @@
       </svg>
     </section>
 
-    <section class="cycle-list">
-      <h2>ループ</h2>
-      {% if graph.cycles %}
-        <ul>
-          {% for cycle in graph.cycles %}
-            <li>{{ cycle|join(" → ") }} → {{ cycle[0] }}</li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>ループはありません。</p>
-      {% endif %}
-    </section>
   {% else %}
     <section class="empty">
       <h2>グラフがありません</h2>

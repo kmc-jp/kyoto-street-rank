@@ -4,6 +4,7 @@ from flask import Flask
 
 from .extensions import db
 from .routes import register_routes
+from .schema import ensure_schema
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -21,6 +22,7 @@ def create_app(database_uri=None):
 
     with app.app_context():
         db.create_all()
+        ensure_schema()
 
     register_routes(app)
     return app

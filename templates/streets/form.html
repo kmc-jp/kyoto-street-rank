@@ -13,6 +13,16 @@
       <input name="name" value="{{ street.name }}" required>
     </label>
 
+    <label>
+      向き
+      <select name="orientation">
+        <option value="" {% if not street.orientation %}selected{% endif %}>未設定</option>
+        {% for value, label in orientation_labels.items() %}
+          <option value="{{ value }}" {% if street.orientation == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
     <div class="form-actions">
       <button class="button" type="submit">保存</button>
       <a href="{{ url_for('streets_index') }}">キャンセル</a>
